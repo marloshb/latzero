@@ -103,111 +103,15 @@
 </head>
 <body>
 
-    <!-- ========================================== -->
-    <!-- INÍCIO DOS CÓDIGOS DA IA (DESATIVADOS)     -->
-    <!-- ========================================== -->
-    <!-- 
-    <div id="aiOverlay" class="ai-overlay" onclick="toggleAISidebar()"></div>
-
-    <button onclick="toggleAISidebar()" class="fixed bottom-8 right-8 bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 py-4 shadow-2xl flex items-center gap-3 transition-transform hover:scale-105 z-30 border-2 border-white group">
-        <i data-lucide="sparkles" class="w-5 h-5 group-hover:animate-pulse text-yellow-300"></i>
-        <span class="font-bold tracking-wide">Assistente Estratégico IA</span>
-    </button>
-
-    <aside id="aiSidebar" class="ai-sidebar">
-        <div class="bg-slate-900 text-white p-6 flex justify-between items-center shrink-0">
-            <div>
-                <h2 class="text-xl font-bold flex items-center gap-2">
-                    <i data-lucide="bot" class="w-6 h-6 text-teal-400"></i> 
-                    Consultor LatZero ✨
-                </h2>
-                <p class="text-xs text-slate-400 mt-1">Desenvolvido com Gemini API</p>
-            </div>
-            <button onclick="toggleAISidebar()" class="text-slate-400 hover:text-white transition-colors">
-                <i data-lucide="x" class="w-6 h-6"></i>
-            </button>
-        </div>
-
-        <div class="flex-grow overflow-y-auto p-6 bg-slate-50 flex flex-col gap-6">
-            
-            <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
-                Sou a inteligência artificial embarcada na plataforma <strong>LatZero</strong>. Posso analisar cenários operacionais ou adaptar a apresentação desta arquitetura para diferentes stakeholders.
-            </div>
-
-            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3">
-                    <i data-lucide="presentation" class="w-4 h-4 text-teal-600"></i>
-                    Gerador de Pitch Adaptativo
-                </h3>
-                <p class="text-xs text-slate-500 mb-3">Adapte a explicação desta arquitetura com base no público-alvo que irá assistir à apresentação.</p>
-                <select id="audienceSelect" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 mb-3 bg-slate-50">
-                    <option value="Diretoria Executiva da Petrobras">Diretoria Executiva</option>
-                    <option value="Órgãos Reguladores (IBAMA, ANP)">Órgãos Reguladores</option>
-                    <option value="Equipe Técnica de Engenharia de Dados e GIS">Equipe Técnica (Dados/GIS)</option>
-                    <option value="Lideranças Comunitárias Locais">Comunidades Locais</option>
-                </select>
-                <button onclick="generatePitch()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
-                    Gerar Explicação ✨
-                </button>
-            </div>
-
-            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3">
-                    <i data-lucide="route" class="w-4 h-4 text-teal-600"></i>
-                    Simulador de Casos de Uso
-                </h3>
-                <p class="text-xs text-slate-500 mb-3">Descreva um evento ou dado e eu simularei como ele percorrerá as 3 camadas do LatZero.</p>
-                <textarea id="useCaseInput" rows="3" class="w-full border border-slate-300 rounded-lg p-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 mb-3 bg-slate-50 resize-none" placeholder="Ex: Uma equipe de campo identificou um recife de corais não mapeado no Amapá..."></textarea>
-                <button onclick="simulateUseCase()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
-                    Simular Fluxo de Dados ✨
-                </button>
-            </div>
-
-            <div id="aiResultContainer" class="hidden flex-col">
-                <div class="flex items-center gap-2 mb-2">
-                    <div class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></div>
-                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Resposta da IA</span>
-                </div>
-                <div class="bg-white border border-teal-200 rounded-xl p-5 shadow-inner relative overflow-hidden">
-                    <div class="absolute top-0 left-0 w-1 h-full bg-teal-500"></div>
-                    
-                    <div id="aiLoader" class="hidden flex-col items-center justify-center py-6">
-                        <div class="loader-dots relative w-20 h-5">
-                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
-                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
-                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
-                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
-                        </div>
-                        <span class="text-xs text-teal-700 mt-3 font-medium animate-pulse" id="loadingText">Processando contexto arquitetônico...</span>
-                    </div>
-
-                    <div id="aiResponseText" class="text-sm text-slate-700 leading-relaxed ai-output">
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </aside>
-    -->
-    <!-- ========================================== -->
-    <!-- FIM DOS CÓDIGOS DA IA                      -->
-    <!-- ========================================== -->
-
-
     <!-- O SLIDE ORIGINAL COMEÇA AQUI -->
     <div class="slide-container p-8">
         
         <!-- HEADER: Título e Propósito -->
         <header class="flex justify-between items-start mb-6 gap-8">
             <div class="flex-shrink-0">
-                <div class="flex items-center gap-2 mb-1">
-                    <div class="w-8 h-0.5 bg-teal-600 relative">
-                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-teal-600 bg-white"></div>
-                    </div>
-                    <h1 class="text-4xl font-bold tracking-tight text-slate-900">Lat<span class="text-teal-600">Zero</span></h1>
-                </div>
-                <h2 class="text-lg font-medium text-slate-500 uppercase tracking-wider">Hub da Margem Equatorial</h2>
-                <p class="text-sm font-semibold text-teal-700 mt-2 max-w-sm">Plataforma integrada de produção, governança, qualidade e inteligência territorial</p>
+                <!-- Logo inserido a partir da imagem -->
+                <img src="logo_latzero.jpg" alt="LatZero - Hub da Margem Equatorial" class="h-20 w-auto object-contain mb-3">
+                <p class="text-sm font-semibold text-teal-700 max-w-sm">Plataforma integrada de produção, governança, qualidade e inteligência territorial</p>
             </div>
 
             <!-- Bloco 1: Contexto e Desafios -->
