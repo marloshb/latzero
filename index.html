@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LatZero - Hub da Margem Equatorial | Arquitetura</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /* Container principal simulando slide 16:9 */
+        .slide-container {
+            width: 1600px;
+            background-color: #ffffff;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+        .layer-module {
+            transition: all 0.2s ease;
+        }
+        .layer-module:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .data-flow-arrow {
+            animation: floatUp 2s infinite ease-in-out;
+        }
+        @keyframes floatUp {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        /* Estilos do Painel IA (Sidebar) */
+        .ai-sidebar {
+            position: fixed;
+            top: 0;
+            right: -500px; /* Hidden by default */
+            width: 450px;
+            height: 100vh;
+            background-color: #ffffff;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #e2e8f0;
+        }
+        .ai-sidebar.open {
+            right: 0;
+        }
+        .ai-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            z-index: 40;
+        }
+        .ai-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .loader-dots div {
+            animation-timing-function: cubic-bezier(0, 1, 1, 0);
+        }
+        .loader-dots div:nth-child(1) { left: 8px; animation: loader-dots1 0.6s infinite; }
+        .loader-dots div:nth-child(2) { left: 8px; animation: loader-dots2 0.6s infinite; }
+        .loader-dots div:nth-child(3) { left: 32px; animation: loader-dots2 0.6s infinite; }
+        .loader-dots div:nth-child(4) { left: 56px; animation: loader-dots3 0.6s infinite; }
+        @keyframes loader-dots1 { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        @keyframes loader-dots3 { 0% { transform: scale(1); } 100% { transform: scale(0); } }
+        @keyframes loader-dots2 { 0% { transform: translate(0, 0); } 100% { transform: translate(24px, 0); } }
+        
+        /* Formatação de Markdown no output da IA */
+        .ai-output p { margin-bottom: 0.75rem; }
+        .ai-output strong { color: #0f172a; font-weight: 600; }
+        .ai-output ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .ai-output li { margin-bottom: 0.25rem; }
+        .ai-output h3 { font-size: 1.1rem; font-weight: 600; color: #0f172a; margin-top: 1rem; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <!-- OVERLAY ESCURO PARA SIDEBAR -->
+    <div id="aiOverlay" class="ai-overlay" onclick="toggleAISidebar()"></div>
+
+    <!-- BOTÃO FLUTUANTE IA -->
+    <button onclick="toggleAISidebar()" class="fixed bottom-8 right-8 bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 py-4 shadow-2xl flex items-center gap-3 transition-transform hover:scale-105 z-30 border-2 border-white group">
+        <i data-lucide="sparkles" class="w-5 h-5 group-hover:animate-pulse text-yellow-300"></i>
+        <span class="font-bold tracking-wide">Assistente Estratégico IA</span>
+    </button>
+
+    <!-- SIDEBAR DE INTELIGÊNCIA ARTIFICIAL -->
+    <aside id="aiSidebar" class="ai-sidebar">
+        <div class="bg-slate-900 text-white p-6 flex justify-between items-center shrink-0">
+            <div>
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <i data-lucide="bot" class="w-6 h-6 text-teal-400"></i> 
+                    Consultor LatZero ✨
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Desenvolvido com Gemini API</p>
+            </div>
+            <button onclick="toggleAISidebar()" class="text-slate-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <div class="flex-grow overflow-y-auto p-6 bg-slate-50 flex flex-col gap-6">
+            
+            <!-- Contexto Intro -->
+            <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
+                Sou a inteligência artificial embarcada na plataforma <strong>LatZero</strong>. Posso analisar cenários operacionais ou adaptar a apresentação desta arquitetura para diferentes stakeholders.
+            </div>
+
+            <!-- Feature 1: Pitch Adaptativo -->
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3">
+                    <i data-lucide="presentation" class="w-4 h-4 text-teal-600"></i>
+                    Gerador de Pitch Adaptativo
+                </h3>
+                <p class="text-xs text-slate-500 mb-3">Adapte a explicação desta arquitetura com base no público-alvo que irá assistir à apresentação.</p>
+                <select id="audienceSelect" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 mb-3 bg-slate-50">
+                    <option value="Diretoria Executiva da Petrobras">Diretoria Executiva</option>
+                    <option value="Órgãos Reguladores (IBAMA, ANP)">Órgãos Reguladores</option>
+                    <option value="Equipe Técnica de Engenharia de Dados e GIS">Equipe Técnica (Dados/GIS)</option>
+                    <option value="Lideranças Comunitárias Locais">Comunidades Locais</option>
+                </select>
+                <button onclick="generatePitch()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
+                    Gerar Explicação ✨
+                </button>
+            </div>
+
+            <!-- Feature 2: Simulador de Fluxo -->
+            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3">
+                    <i data-lucide="route" class="w-4 h-4 text-teal-600"></i>
+                    Simulador de Casos de Uso
+                </h3>
+                <p class="text-xs text-slate-500 mb-3">Descreva um evento ou dado e eu simularei como ele percorrerá as 3 camadas do LatZero.</p>
+                <textarea id="useCaseInput" rows="3" class="w-full border border-slate-300 rounded-lg p-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-500 mb-3 bg-slate-50 resize-none" placeholder="Ex: Uma equipe de campo identificou um recife de corais não mapeado no Amapá..."></textarea>
+                <button onclick="simulateUseCase()" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors flex justify-center items-center gap-2">
+                    Simular Fluxo de Dados ✨
+                </button>
+            </div>
+
+            <!-- Área de Resultado (Output) -->
+            <div id="aiResultContainer" class="hidden flex-col">
+                <div class="flex items-center gap-2 mb-2">
+                    <div class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></div>
+                    <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Resposta da IA</span>
+                </div>
+                <div class="bg-white border border-teal-200 rounded-xl p-5 shadow-inner relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-teal-500"></div>
+                    
+                    <!-- Loading State -->
+                    <div id="aiLoader" class="hidden flex-col items-center justify-center py-6">
+                        <div class="loader-dots relative w-20 h-5">
+                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
+                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
+                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
+                            <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
+                        </div>
+                        <span class="text-xs text-teal-700 mt-3 font-medium animate-pulse" id="loadingText">Processando contexto arquitetônico...</span>
+                    </div>
+
+                    <!-- Texto de Resposta -->
+                    <div id="aiResponseText" class="text-sm text-slate-700 leading-relaxed ai-output">
+                        <!-- Conteúdo será injetado aqui -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <!-- O SLIDE ORIGINAL COMEÇA AQUI -->
+    <div class="slide-container p-8">
+        
+        <!-- HEADER: Título e Propósito -->
+        <header class="flex justify-between items-start mb-6 gap-8">
+            <div class="flex-shrink-0">
+                <div class="flex items-center gap-2 mb-1">
+                    <div class="w-8 h-0.5 bg-teal-600 relative">
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-teal-600 bg-white"></div>
+                    </div>
+                    <h1 class="text-4xl font-bold tracking-tight text-slate-900">Lat<span class="text-teal-600">Zero</span></h1>
+                </div>
+                <h2 class="text-lg font-medium text-slate-500 uppercase tracking-wider">Hub da Margem Equatorial</h2>
+                <p class="text-sm font-semibold text-teal-700 mt-2 max-w-sm">Plataforma integrada de produção, governança, qualidade e inteligência territorial</p>
+            </div>
+
+            <!-- Bloco 1: Contexto e Desafios -->
+            <div class="flex-grow bg-slate-50 rounded-lg border border-slate-200 p-4">
+                <p class="text-slate-700 font-medium text-sm mb-3">
+                    <i data-lucide="target" class="inline w-4 h-4 text-teal-600 mr-1 -mt-1"></i>
+                    Transformar a produção distribuída de dados em uma <span class="text-slate-900 font-bold">base corporativa confiável</span> para monitoramento, licenciamento, operação e engajamento territorial na Margem Equatorial.
+                </p>
+                <div class="flex flex-wrap gap-2">
+                    <span class="text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-500 px-2 py-1 rounded">Múltiplos atores produtores</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-500 px-2 py-1 rounded">Inúmeros formatos</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-500 px-2 py-1 rounded">Operação Online/Offline</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-500 px-2 py-1 rounded">Necessidade de QA/QC</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-500 px-2 py-1 rounded">Aderência a padrões Petrobras</span>
+                    <span class="text-[10px] font-semibold uppercase tracking-wider bg-white border border-slate-200 text-slate-500 px-2 py-1 rounded">Integração com regulação</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT: 3 Colunas -->
+        <main class="grid grid-cols-12 gap-6 flex-grow mb-6">
+            
+            <!-- LATERAL ESQUERDA: Ecossistema de Produção -->
+            <div class="col-span-2 flex flex-col">
+                <div class="bg-slate-800 text-white p-3 rounded-t-lg text-center">
+                    <h3 class="text-xs font-bold uppercase tracking-wider">Ecossistema de<br>Produção</h3>
+                </div>
+                <div class="flex-grow bg-slate-50 border border-slate-200 border-t-0 rounded-b-lg p-3 flex flex-col gap-2 justify-center relative">
+                    <div class="absolute -right-4 top-1/2 transform -translate-y-1/2 text-slate-400">
+                        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+                    </div>
+
+                    <div class="flex items-center gap-2 bg-white p-2 rounded border border-slate-100 shadow-sm text-xs font-medium text-slate-600"><i data-lucide="building" class="w-3 h-3 text-teal-600"></i> Consultorias</div>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded border border-slate-100 shadow-sm text-xs font-medium text-slate-600"><i data-lucide="graduation-cap" class="w-3 h-3 text-teal-600"></i> Universidades & Inst.</div>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded border border-slate-100 shadow-sm text-xs font-medium text-slate-600"><i data-lucide="leaf" class="w-3 h-3 text-teal-600"></i> Empresas Ambientais</div>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded border border-slate-100 shadow-sm text-xs font-medium text-slate-600"><i data-lucide="hard-hat" class="w-3 h-3 text-teal-600"></i> Empresas de Engenharia</div>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded border border-slate-100 shadow-sm text-xs font-medium text-slate-600"><i data-lucide="users" class="w-3 h-3 text-teal-600"></i> Comunidades e Campo</div>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded border border-slate-100 shadow-sm text-xs font-medium text-slate-600"><i data-lucide="satellite" class="w-3 h-3 text-teal-600"></i> Sensores & Imagens</div>
+                    <div class="flex items-center gap-2 bg-white p-2 rounded border border-slate-100 shadow-sm text-xs font-medium text-slate-600"><i data-lucide="flask-conical" class="w-3 h-3 text-teal-600"></i> Laboratórios</div>
+                </div>
+            </div>
+
+            <!-- NÚCLEO CENTRAL: 3 Camadas -->
+            <div class="col-span-8 flex flex-col gap-3 justify-end">
+                
+                <!-- Camada 3: Ativação -->
+                <div class="border-2 border-slate-800 bg-slate-50 rounded-xl p-4 relative layer-module">
+                    <div class="absolute -top-3 left-6 bg-slate-800 text-white px-3 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm">
+                        <i data-lucide="layout-dashboard" class="w-3 h-3 text-teal-400"></i> Camada 3: Plataforma de Aplicações e Inteligência da Margem
+                    </div>
+                    <p class="text-xs text-slate-600 mt-2 mb-3 pl-2 border-l-2 border-slate-300">Ativa a base consolidada em aplicações operacionais, regulatórias, analíticas e territoriais.</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>Monitoramento ambiental</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>Riscos climáticos & vuln.</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>Modelagem ecossistêmica</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>Licenciamento ambiental</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>Interface/Plugin IBAMA</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>Logística e risco tecnológico</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>Atlas Margem Equatorial</div>
+                        <div class="bg-teal-50 border border-teal-200 rounded p-2 text-[11px] font-semibold text-teal-800 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-600"></div>Aplicações Sociais & TI</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center -my-1 z-10"><i data-lucide="arrow-up" class="w-5 h-5 text-teal-600 bg-white rounded-full data-flow-arrow"></i></div>
+
+                <!-- Camada 2: QA/QC e Conversão -->
+                <div class="border-2 border-teal-600 bg-teal-50/30 rounded-xl p-4 relative layer-module">
+                    <div class="absolute -top-3 left-6 bg-teal-600 text-white px-3 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm">
+                        <i data-lucide="shield-check" class="w-3 h-3 text-teal-100"></i> Camada 2: Torre de Controle QA/QC e Conversão Corporativa
+                    </div>
+                    <div class="flex justify-between items-center mt-2 mb-3">
+                        <p class="text-xs text-slate-600 pl-2 border-l-2 border-teal-300 w-2/3">Integra, verifica, corrige, consolida e converte as bases para os standards Petrobras (incluindo BDCO).</p>
+                        <div class="text-[10px] bg-teal-100 text-teal-800 font-bold px-2 py-1 rounded-full flex items-center gap-1 border border-teal-200">
+                            Heterogêneo <i data-lucide="arrow-right" class="w-3 h-3"></i> Validado <i data-lucide="arrow-right" class="w-3 h-3"></i> Oficial
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500"></div>Hub de integração de bases</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500"></div>Motor automatizado QA/QC</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500"></div>Gestão de não conformidades</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500"></div>Despacho de OS (Correção)</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500"></div>Curadoria e consolidação</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500"></div>Conversor Standard Petrobras</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2 col-span-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-500"></div>Painel de saúde e maturidade da base</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center -my-1 z-10"><i data-lucide="arrow-up" class="w-5 h-5 text-slate-400 bg-white rounded-full data-flow-arrow"></i></div>
+
+                <!-- Camada 1: Produção -->
+                <div class="border-2 border-slate-300 bg-slate-100/50 rounded-xl p-4 relative mt-1 layer-module">
+                    <div class="absolute -top-3 left-6 bg-slate-600 text-white px-3 py-1 rounded text-xs font-bold uppercase tracking-wider flex items-center gap-2 shadow-sm">
+                        <i data-lucide="database" class="w-3 h-3 text-slate-200"></i> Camada 1: Fábrica Federada de Dados Territoriais
+                    </div>
+                    <p class="text-xs text-slate-600 mt-2 mb-3 pl-2 border-l-2 border-slate-300">Produção padronizada de dados geoespaciais e temáticos, com validação na origem e rastreabilidade.</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Portal do produtor de dados</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Coleta e edição em campo</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Tratamento e staging area</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Preenchimento de atributos</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Padronização inicial</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Validador de entrada</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Gestão de anexos/evidências</div>
+                        <div class="bg-white border border-slate-200 rounded p-2 text-[11px] font-medium text-slate-700 flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-slate-400"></div>Versionamento e auditoria</div>
+                    </div>
+                </div>
+
+                <!-- Fundações Transversais -->
+                <div class="mt-2 bg-slate-800 rounded-lg p-3 border border-slate-700 relative overflow-hidden layer-module">
+                    <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 10px 10px;"></div>
+                    
+                    <h3 class="text-xs font-bold text-teal-400 uppercase tracking-wider mb-2 text-center relative z-10">Fundações Transversais da Plataforma</h3>
+                    
+                    <div class="grid grid-cols-4 gap-4 relative z-10">
+                        <div class="text-center">
+                            <div class="text-[11px] font-semibold text-white uppercase border-b border-slate-600 pb-1 mb-1">Governança de Dados</div>
+                            <div class="text-[10px] text-slate-300">Modelo Canônico Petrobras • Metadados</div>
+                        </div>
+                        <div class="text-center border-l border-slate-600">
+                            <div class="text-[11px] font-semibold text-white uppercase border-b border-slate-600 pb-1 mb-1 mx-2">Interoperabilidade</div>
+                            <div class="text-[10px] text-slate-300">APIs • Busca Semântica</div>
+                        </div>
+                        <div class="text-center border-l border-slate-600">
+                            <div class="text-[11px] font-semibold text-white uppercase border-b border-slate-600 pb-1 mb-1 mx-2">Segurança & Acesso</div>
+                            <div class="text-[10px] text-slate-300">Trilha de Auditoria • Perfis</div>
+                        </div>
+                        <div class="text-center border-l border-slate-600">
+                            <div class="text-[11px] font-semibold text-white uppercase border-b border-slate-600 pb-1 mb-1 mx-2">Automação & GeoAI</div>
+                            <div class="text-[10px] text-slate-300">Regras de Qualidade • Analytics</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- LATERAL DIREITA: Ciclo de Vida -->
+            <div class="col-span-2 flex flex-col">
+                <div class="bg-teal-700 text-white p-3 rounded-t-lg text-center">
+                    <h3 class="text-xs font-bold uppercase tracking-wider">Ciclo de Vida<br>Atendido</h3>
+                </div>
+                <div class="flex-grow bg-slate-50 border border-slate-200 border-t-0 rounded-b-lg p-3 flex flex-col gap-2 justify-center relative">
+                    <div class="absolute -left-4 top-1/2 transform -translate-y-1/2 text-slate-400">
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-teal-600"></i>
+                    </div>
+
+                    <div class="bg-white border border-teal-100 p-2 rounded shadow-sm text-center"><span class="text-[11px] font-bold text-slate-700 block">Estudos Prévios</span></div>
+                    <div class="flex justify-center -my-2 z-10"><div class="w-px h-3 bg-teal-200"></div></div>
+                    <div class="bg-white border border-teal-100 p-2 rounded shadow-sm text-center"><span class="text-[11px] font-bold text-slate-700 block">Licenciamento</span></div>
+                    <div class="flex justify-center -my-2 z-10"><div class="w-px h-3 bg-teal-200"></div></div>
+                    <div class="bg-white border border-teal-100 p-2 rounded shadow-sm text-center"><span class="text-[11px] font-bold text-slate-700 block">Pós-Licença</span></div>
+                    <div class="flex justify-center -my-2 z-10"><div class="w-px h-3 bg-teal-200"></div></div>
+                    <div class="bg-white border border-teal-100 p-2 rounded shadow-sm text-center"><span class="text-[11px] font-bold text-slate-700 block">Monitoramento Contínuo</span></div>
+                    <div class="flex justify-center -my-2 z-10"><div class="w-px h-3 bg-teal-200"></div></div>
+                    <div class="bg-white border border-teal-100 p-2 rounded shadow-sm text-center"><span class="text-[11px] font-bold text-slate-700 block">Operação</span></div>
+                    <div class="flex justify-center -my-2 z-10"><div class="w-px h-3 bg-teal-200"></div></div>
+                    <div class="bg-white border border-teal-100 p-2 rounded shadow-sm text-center"><span class="text-[11px] font-bold text-slate-700 block">Resposta a Eventos</span></div>
+                    <div class="flex justify-center -my-2 z-10"><div class="w-px h-3 bg-teal-200"></div></div>
+                    <div class="bg-teal-50 border border-teal-200 p-2 rounded shadow-sm text-center"><span class="text-[11px] font-bold text-teal-800 block">Transparência & Engajamento</span></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- RODAPÉ SUPERIOR: Tech Stack & Integrações -->
+        <div class="grid grid-cols-2 gap-6 mb-4">
+            <div class="border border-slate-200 rounded-lg p-3 bg-white layer-module">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1">
+                    <i data-lucide="layers" class="w-3 h-3"></i> ArcGIS e Stack Tecnológico
+                </h4>
+                <div class="flex flex-wrap gap-1.5">
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">ArcGIS Enterprise</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Enterprise Geodatabase</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">ArcGIS Pro</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">ArcGIS Field Maps</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Survey123</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">QuickCapture</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Workflow Manager</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Dashboards</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Experience Builder</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">ArcGIS Hub</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Data Reviewer</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Image Server</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200">Notebooks / Python / APIs</span>
+                </div>
+            </div>
+
+            <div class="border border-slate-200 rounded-lg p-3 bg-white layer-module">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1">
+                    <i data-lucide="network" class="w-3 h-3"></i> Integrações Estratégicas
+                </h4>
+                <div class="flex flex-wrap gap-1.5">
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 font-medium">Sistemas Internos Petrobras</span>
+                    <span class="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-100 font-medium">BDCO</span>
+                    <span class="text-[10px] bg-green-50 text-green-700 px-2 py-0.5 rounded border border-green-100 font-medium">IBAMA / SISGEMA</span>
+                    <span class="text-[10px] bg-amber-50 text-amber-700 px-2 py-0.5 rounded border border-amber-100 font-medium">Laboratórios Externos</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200 font-medium">Sensoriamento Remoto</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200 font-medium">Bases Regulatórias</span>
+                    <span class="text-[10px] bg-purple-50 text-purple-700 px-2 py-0.5 rounded border border-purple-100 font-medium">Modelos Analíticos (InVEST)</span>
+                    <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200 font-medium">Dados Municipais e Territoriais</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM BAR: Resultados Esperados -->
+        <div class="bg-teal-800 text-white rounded-lg p-4 flex justify-between items-center shadow-inner">
+            <div class="flex items-center gap-2 border-r border-teal-600 pr-4">
+                <i data-lucide="bar-chart-3" class="text-teal-300 w-5 h-5"></i>
+                <span class="text-xs font-bold uppercase tracking-wider">Resultados<br>Esperados</span>
+            </div>
+            <div class="flex-grow flex justify-around pl-4">
+                <div class="flex flex-col items-center text-center max-w-[150px]">
+                    <i data-lucide="database-zap" class="w-4 h-4 text-teal-300 mb-1"></i><span class="text-[11px] font-medium leading-tight">Base única<br>e confiável</span>
+                </div>
+                <div class="flex flex-col items-center text-center max-w-[150px]">
+                    <i data-lucide="scissors" class="w-4 h-4 text-teal-300 mb-1"></i><span class="text-[11px] font-medium leading-tight">Menos retrabalho<br>e dispersão</span>
+                </div>
+                <div class="flex flex-col items-center text-center max-w-[150px]">
+                    <i data-lucide="check-circle-2" class="w-4 h-4 text-teal-300 mb-1"></i><span class="text-[11px] font-medium leading-tight">Qualidade incorporada<br>ao fluxo</span>
+                </div>
+                <div class="flex flex-col items-center text-center max-w-[150px]">
+                    <i data-lucide="arrow-right-left" class="w-4 h-4 text-teal-300 mb-1"></i><span class="text-[11px] font-medium leading-tight">Conversão para<br>Standard Petrobras</span>
+                </div>
+                <div class="flex flex-col items-center text-center max-w-[150px]">
+                    <i data-lucide="brain-circuit" class="w-4 h-4 text-teal-300 mb-1"></i><span class="text-[11px] font-medium leading-tight">Inteligência territorial<br>para decisão</span>
+                </div>
+                <div class="flex flex-col items-center text-center max-w-[150px]">
+                    <i data-lucide="infinity" class="w-4 h-4 text-teal-300 mb-1"></i><span class="text-[11px] font-medium leading-tight">Sustentação do<br>Ciclo Completo</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SCRIPT DA INTELIGÊNCIA ARTIFICIAL (GEMINI API) -->
+    <script>
+        lucide.createIcons();
+
+        // Variáveis de Interface
+        const sidebar = document.getElementById('aiSidebar');
+        const overlay = document.getElementById('aiOverlay');
+        const resultContainer = document.getElementById('aiResultContainer');
+        const loader = document.getElementById('aiLoader');
+        const responseText = document.getElementById('aiResponseText');
+        const loadingText = document.getElementById('loadingText');
+
+        // Gemini API Configuration
+        const apiKey = ""; 
+
+        // Contexto fixo da arquitetura (para basear as respostas do LLM)
+        const sysPrompt = `Você é o consultor estratégico de IA da plataforma 'LatZero - Hub da Margem Equatorial'. 
+Sua função é explicar ou aplicar a arquitetura da plataforma de forma corporativa, executiva e clara.
+Sempre responda em português do Brasil. Use parágrafos curtos, listas (bullet points) e negrito para destacar conceitos chaves. Não use marcações markdown excessivas fora de negritos e listas básicas.
+
+O contexto da arquitetura é:
+- Propósito: Transformar a produção de dados distribuída em base corporativa confiável para licenciamento, operação e monitoramento na Margem Equatorial.
+- Camada 1 (Fábrica Federada): Onde consultorias, universidades e equipes coletam dados em campo (offline/online), com validação básica na origem.
+- Camada 2 (Torre de Controle): Onde ocorre o QA/QC (Controle de Qualidade) automatizado, correção de erros e conversão para o padrão interno da Petrobras (BDCO).
+- Camada 3 (Aplicações e Inteligência): Onde os dados viram dashboards de monitoramento, análises climáticas, plugin com IBAMA e comunicação social.
+- Back-end suportado pelo ecossistema Esri/ArcGIS (Enterprise, Pro, Field Maps).`;
+
+        function toggleAISidebar() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        // Função de chamada à API Gemini com Exponential Backoff
+        async function fetchGeminiAPI(prompt, retryCount = 0) {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: sysPrompt }] }
+            };
+
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                if (retryCount < 5) {
+                    const delays = [1000, 2000, 4000, 8000, 16000];
+                    await new Promise(r => setTimeout(r, delays[retryCount]));
+                    return fetchGeminiAPI(prompt, retryCount + 1);
+                }
+                throw error;
+            }
+        }
+
+        // Feature 1: Gerador de Pitch
+        async function generatePitch() {
+            const audience = document.getElementById('audienceSelect').value;
+            const prompt = `Gere um "Pitch" (discurso de venda interna ou explicação executiva) curto e direto (máximo de 3 a 4 parágrafos pequenos) explicando o valor da arquitetura de 3 camadas do LatZero especificamente para este público: ${audience}. Foque nas dores e nos ganhos (Resultados Esperados) que importam para eles.`;
+            
+            await processAIRequest(prompt, `Criando roteiro para ${audience}...`);
+        }
+
+        // Feature 2: Simulador de Caso de Uso
+        async function simulateUseCase() {
+            const useCase = document.getElementById('useCaseInput').value;
+            if(!useCase.trim()) {
+                alert("Por favor, digite um caso de uso ou evento para simular.");
+                return;
+            }
+            const prompt = `Baseado na arquitetura LatZero, explique passo a passo (Camada 1, Camada 2, Camada 3) como o seguinte evento/dado seria tratado pela plataforma: "${useCase}". Descreva brevemente o que acontece em cada camada.`;
+            
+            await processAIRequest(prompt, `Simulando o fluxo nas 3 camadas...`);
+        }
+
+        // Controlador de Interface para a IA
+        async function processAIRequest(prompt, loadingMsg) {
+            resultContainer.classList.remove('hidden');
+            resultContainer.classList.add('flex');
+            loader.classList.remove('hidden');
+            loader.classList.add('flex');
+            responseText.innerHTML = '';
+            loadingText.innerText = loadingMsg;
+
+            try {
+                const result = await fetchGeminiAPI(prompt);
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                
+                // Formatação simples de Markdown para HTML
+                let formattedResult = result
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')             // Italic
+                    .replace(/^- (.*)$/gm, '<li>$1</li>')              // List items
+                    .replace(/\n\n/g, '</p><p>');                      // Paragraphs
+                
+                // Wrap lists
+                formattedResult = formattedResult.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+                
+                responseText.innerHTML = `<p>${formattedResult}</p>`;
+            } catch (error) {
+                loader.classList.add('hidden');
+                loader.classList.remove('flex');
+                responseText.innerHTML = `<p class="text-red-600 font-medium">Ocorreu um erro ao consultar o consultor IA. Por favor, verifique a chave da API ou tente novamente.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
