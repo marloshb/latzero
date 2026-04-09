@@ -103,17 +103,18 @@
 </head>
 <body>
 
-    <!-- OVERLAY ESCURO PARA SIDEBAR -->
-    <!--<div id="aiOverlay" class="ai-overlay" onclick="toggleAISidebar()"></div>
+    <!-- ========================================== -->
+    <!-- INÍCIO DOS CÓDIGOS DA IA (DESATIVADOS)     -->
+    <!-- ========================================== -->
+    <!-- 
+    <div id="aiOverlay" class="ai-overlay" onclick="toggleAISidebar()"></div>
 
-    <!-- BOTÃO FLUTUANTE IA -->
-    <!--<button onclick="toggleAISidebar()" class="fixed bottom-8 right-8 bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 py-4 shadow-2xl flex items-center gap-3 transition-transform hover:scale-105 z-30 border-2 border-white group">
+    <button onclick="toggleAISidebar()" class="fixed bottom-8 right-8 bg-teal-600 hover:bg-teal-700 text-white rounded-full px-6 py-4 shadow-2xl flex items-center gap-3 transition-transform hover:scale-105 z-30 border-2 border-white group">
         <i data-lucide="sparkles" class="w-5 h-5 group-hover:animate-pulse text-yellow-300"></i>
         <span class="font-bold tracking-wide">Assistente Estratégico IA</span>
     </button>
 
-    <!-- SIDEBAR DE INTELIGÊNCIA ARTIFICIAL -->
-    <!--<aside id="aiSidebar" class="ai-sidebar">
+    <aside id="aiSidebar" class="ai-sidebar">
         <div class="bg-slate-900 text-white p-6 flex justify-between items-center shrink-0">
             <div>
                 <h2 class="text-xl font-bold flex items-center gap-2">
@@ -129,12 +130,10 @@
 
         <div class="flex-grow overflow-y-auto p-6 bg-slate-50 flex flex-col gap-6">
             
-            <!-- Contexto Intro -->
             <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
                 Sou a inteligência artificial embarcada na plataforma <strong>LatZero</strong>. Posso analisar cenários operacionais ou adaptar a apresentação desta arquitetura para diferentes stakeholders.
             </div>
 
-            <!-- Feature 1: Pitch Adaptativo -->
             <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3">
                     <i data-lucide="presentation" class="w-4 h-4 text-teal-600"></i>
@@ -152,7 +151,6 @@
                 </button>
             </div>
 
-            <!-- Feature 2: Simulador de Fluxo -->
             <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
                 <h3 class="font-bold text-slate-800 flex items-center gap-2 mb-3">
                     <i data-lucide="route" class="w-4 h-4 text-teal-600"></i>
@@ -165,7 +163,6 @@
                 </button>
             </div>
 
-            <!-- Área de Resultado (Output) -->
             <div id="aiResultContainer" class="hidden flex-col">
                 <div class="flex items-center gap-2 mb-2">
                     <div class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></div>
@@ -174,7 +171,6 @@
                 <div class="bg-white border border-teal-200 rounded-xl p-5 shadow-inner relative overflow-hidden">
                     <div class="absolute top-0 left-0 w-1 h-full bg-teal-500"></div>
                     
-                    <!-- Loading State -->
                     <div id="aiLoader" class="hidden flex-col items-center justify-center py-6">
                         <div class="loader-dots relative w-20 h-5">
                             <div class="absolute top-0 w-3 h-3 rounded-full bg-teal-600"></div>
@@ -185,15 +181,18 @@
                         <span class="text-xs text-teal-700 mt-3 font-medium animate-pulse" id="loadingText">Processando contexto arquitetônico...</span>
                     </div>
 
-                    <!-- Texto de Resposta -->
                     <div id="aiResponseText" class="text-sm text-slate-700 leading-relaxed ai-output">
-                        <!-- Conteúdo será injetado aqui -->
                     </div>
                 </div>
             </div>
 
         </div>
     </aside>
+    -->
+    <!-- ========================================== -->
+    <!-- FIM DOS CÓDIGOS DA IA                      -->
+    <!-- ========================================== -->
+
 
     <!-- O SLIDE ORIGINAL COMEÇA AQUI -->
     <div class="slide-container p-8">
@@ -446,117 +445,114 @@
     <script>
         lucide.createIcons();
 
-        // Variáveis de Interface
-        //const sidebar = document.getElementById('aiSidebar');
-        //const overlay = document.getElementById('aiOverlay');
-        //const resultContainer = document.getElementById('aiResultContainer');
-        //const loader = document.getElementById('aiLoader');
-        //const responseText = document.getElementById('aiResponseText');
-        //const loadingText = document.getElementById('loadingText');
-
-        // Gemini API Configuration
-        //const apiKey = ""; 
-
-        // Contexto fixo da arquitetura (para basear as respostas do LLM)
-        //const sysPrompt = `Você é o consultor estratégico de IA da plataforma 'LatZero - Hub da Margem Equatorial'. 
-Sua função é explicar ou aplicar a arquitetura da plataforma de forma corporativa, executiva e clara.
-Sempre responda em português do Brasil. Use parágrafos curtos, listas (bullet points) e negrito para destacar conceitos chaves. Não use marcações markdown excessivas fora de negritos e listas básicas.
-
-O contexto da arquitetura é:
-- Propósito: Transformar a produção de dados distribuída em base corporativa confiável para licenciamento, operação e monitoramento na Margem Equatorial.
-- Camada 1 (Fábrica Federada): Onde consultorias, universidades e equipes coletam dados em campo (offline/online), com validação básica na origem.
-- Camada 2 (Torre de Controle): Onde ocorre o QA/QC (Controle de Qualidade) automatizado, correção de erros e conversão para o padrão interno da Petrobras (BDCO).
-- Camada 3 (Aplicações e Inteligência): Onde os dados viram dashboards de monitoramento, análises climáticas, plugin com IBAMA e comunicação social.
-- Back-end suportado pelo ecossistema Esri/ArcGIS (Enterprise, Pro, Field Maps).`;
-
-        function toggleAISidebar() {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('open');
-        }
-
-        // Função de chamada à API Gemini com Exponential Backoff
-        async function fetchGeminiAPI(prompt, retryCount = 0) {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: sysPrompt }] }
-            };
-
-            try {
-                const response = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                return data.candidates[0].content.parts[0].text;
-            } catch (error) {
-                if (retryCount < 5) {
-                    const delays = [1000, 2000, 4000, 8000, 16000];
-                    await new Promise(r => setTimeout(r, delays[retryCount]));
-                    return fetchGeminiAPI(prompt, retryCount + 1);
-                }
-                throw error;
-            }
-        }
-
-        // Feature 1: Gerador de Pitch
-        async function generatePitch() {
-            const audience = document.getElementById('audienceSelect').value;
-            const prompt = `Gere um "Pitch" (discurso de venda interna ou explicação executiva) curto e direto (máximo de 3 a 4 parágrafos pequenos) explicando o valor da arquitetura de 3 camadas do LatZero especificamente para este público: ${audience}. Foque nas dores e nos ganhos (Resultados Esperados) que importam para eles.`;
-            
-            await processAIRequest(prompt, `Criando roteiro para ${audience}...`);
-        }
-
-        // Feature 2: Simulador de Caso de Uso
-        async function simulateUseCase() {
-            const useCase = document.getElementById('useCaseInput').value;
-            if(!useCase.trim()) {
-                alert("Por favor, digite um caso de uso ou evento para simular.");
-                return;
-            }
-            const prompt = `Baseado na arquitetura LatZero, explique passo a passo (Camada 1, Camada 2, Camada 3) como o seguinte evento/dado seria tratado pela plataforma: "${useCase}". Descreva brevemente o que acontece em cada camada.`;
-            
-            await processAIRequest(prompt, `Simulando o fluxo nas 3 camadas...`);
-        }
-
-        // Controlador de Interface para a IA
-        async function processAIRequest(prompt, loadingMsg) {
-            resultContainer.classList.remove('hidden');
-            resultContainer.classList.add('flex');
-            loader.classList.remove('hidden');
-            loader.classList.add('flex');
-            responseText.innerHTML = '';
-            loadingText.innerText = loadingMsg;
-
-            try {
-                const result = await fetchGeminiAPI(prompt);
-                loader.classList.add('hidden');
-                loader.classList.remove('flex');
-                
-                // Formatação simples de Markdown para HTML
-                let formattedResult = result
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')             // Italic
-                    .replace(/^- (.*)$/gm, '<li>$1</li>')              // List items
-                    .replace(/\n\n/g, '</p><p>');                      // Paragraphs
-                
-                // Wrap lists
-                formattedResult = formattedResult.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
-                
-                responseText.innerHTML = `<p>${formattedResult}</p>`;
-            } catch (error) {
-                loader.classList.add('hidden');
-                loader.classList.remove('flex');
-                responseText.innerHTML = `<p class="text-red-600 font-medium">Ocorreu um erro ao consultar o consultor IA. Por favor, verifique a chave da API ou tente novamente.</p>`;
-            }
-        }
+        // ==========================================
+        // INÍCIO DO SCRIPT DA IA (DESATIVADO)
+        // ==========================================
+        // const sidebar = document.getElementById('aiSidebar');
+        // const overlay = document.getElementById('aiOverlay');
+        // const resultContainer = document.getElementById('aiResultContainer');
+        // const loader = document.getElementById('aiLoader');
+        // const responseText = document.getElementById('aiResponseText');
+        // const loadingText = document.getElementById('loadingText');
+        //
+        // const apiKey = ""; 
+        //
+        // const sysPrompt = `Você é o consultor estratégico de IA da plataforma 'LatZero - Hub da Margem Equatorial'. 
+        // Sua função é explicar ou aplicar a arquitetura da plataforma de forma corporativa, executiva e clara.
+        // Sempre responda em português do Brasil. Use parágrafos curtos, listas (bullet points) e negrito para destacar conceitos chaves. Não use marcações markdown excessivas fora de negritos e listas básicas.
+        // 
+        // O contexto da arquitetura é:
+        // - Propósito: Transformar a produção de dados distribuída em base corporativa confiável para licenciamento, operação e monitoramento na Margem Equatorial.
+        // - Camada 1 (Fábrica Federada): Onde consultorias, universidades e equipes coletam dados em campo (offline/online), com validação básica na origem.
+        // - Camada 2 (Torre de Controle): Onde ocorre o QA/QC (Controle de Qualidade) automatizado, correção de erros e conversão para o padrão interno da Petrobras (BDCO).
+        // - Camada 3 (Aplicações e Inteligência): Onde os dados viram dashboards de monitoramento, análises climáticas, plugin com IBAMA e comunicação social.
+        // - Back-end suportado pelo ecossistema Esri/ArcGIS (Enterprise, Pro, Field Maps).`;
+        //
+        // function toggleAISidebar() {
+        //     sidebar.classList.toggle('open');
+        //     overlay.classList.toggle('open');
+        // }
+        //
+        // async function fetchGeminiAPI(prompt, retryCount = 0) {
+        //     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        //     
+        //     const payload = {
+        //         contents: [{ parts: [{ text: prompt }] }],
+        //         systemInstruction: { parts: [{ text: sysPrompt }] }
+        //     };
+        //
+        //     try {
+        //         const response = await fetch(endpoint, {
+        //             method: 'POST',
+        //             headers: { 'Content-Type': 'application/json' },
+        //             body: JSON.stringify(payload)
+        //         });
+        //
+        //         if (!response.ok) {
+        //             throw new Error(`API Error: ${response.status}`);
+        //         }
+        //
+        //         const data = await response.json();
+        //         return data.candidates[0].content.parts[0].text;
+        //     } catch (error) {
+        //         if (retryCount < 5) {
+        //             const delays = [1000, 2000, 4000, 8000, 16000];
+        //             await new Promise(r => setTimeout(r, delays[retryCount]));
+        //             return fetchGeminiAPI(prompt, retryCount + 1);
+        //         }
+        //         throw error;
+        //     }
+        // }
+        //
+        // async function generatePitch() {
+        //     const audience = document.getElementById('audienceSelect').value;
+        //     const prompt = `Gere um "Pitch" (discurso de venda interna ou explicação executiva) curto e direto (máximo de 3 a 4 parágrafos pequenos) explicando o valor da arquitetura de 3 camadas do LatZero especificamente para este público: ${audience}. Foque nas dores e nos ganhos (Resultados Esperados) que importam para eles.`;
+        //     
+        //     await processAIRequest(prompt, \`Criando roteiro para \${audience}...\`);
+        // }
+        //
+        // async function simulateUseCase() {
+        //     const useCase = document.getElementById('useCaseInput').value;
+        //     if(!useCase.trim()) {
+        //         alert("Por favor, digite um caso de uso ou evento para simular.");
+        //         return;
+        //     }
+        //     const prompt = `Baseado na arquitetura LatZero, explique passo a passo (Camada 1, Camada 2, Camada 3) como o seguinte evento/dado seria tratado pela plataforma: "${useCase}". Descreva brevemente o que acontece em cada camada.`;
+        //     
+        //     await processAIRequest(prompt, \`Simulando o fluxo nas 3 camadas...\`);
+        // }
+        //
+        // async function processAIRequest(prompt, loadingMsg) {
+        //     resultContainer.classList.remove('hidden');
+        //     resultContainer.classList.add('flex');
+        //     loader.classList.remove('hidden');
+        //     loader.classList.add('flex');
+        //     responseText.innerHTML = '';
+        //     loadingText.innerText = loadingMsg;
+        //
+        //     try {
+        //         const result = await fetchGeminiAPI(prompt);
+        //         loader.classList.add('hidden');
+        //         loader.classList.remove('flex');
+        //         
+        //         let formattedResult = result
+        //             .replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>')
+        //             .replace(/\\*(.*?)\\*/g, '<em>$1</em>')
+        //             .replace(/^- (.*)$/gm, '<li>$1</li>')
+        //             .replace(/\\n\\n/g, '</p><p>');
+        //         
+        //         formattedResult = formattedResult.replace(/(<li>.*<\\/li>)/s, '<ul>$1</ul>');
+        //         
+        //         responseText.innerHTML = \`<p>\${formattedResult}</p>\`;
+        //     } catch (error) {
+        //         loader.classList.add('hidden');
+        //         loader.classList.remove('flex');
+        //         responseText.innerHTML = \`<p class="text-red-600 font-medium">Ocorreu um erro ao consultar o consultor IA. Por favor, verifique a chave da API ou tente novamente.</p>\`;
+        //     }
+        // }
+        // ==========================================
+        // FIM DO SCRIPT DA IA
+        // ==========================================
     </script>
 </body>
 </html>
