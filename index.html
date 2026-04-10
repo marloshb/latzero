@@ -109,8 +109,17 @@
         <!-- HEADER: Título e Propósito -->
         <header class="flex justify-between items-start mb-6 gap-8">
             <div class="flex-shrink-0">
-                <!-- Logo inserido a partir da imagem -->
-                <img src="logo_latzero.jpg" alt="LatZero - Hub da Margem Equatorial" class="h-20 w-auto object-contain mb-3">
+                <!-- Logo: Tenta carregar a imagem, se falhar (como no Canvas), mostra o logo em texto -->
+                <img src="logo_latzero.jpg" alt="LatZero - Hub da Margem Equatorial" class="h-20 w-auto object-contain mb-3" onerror="this.onerror=null; this.style.display='none'; document.getElementById('fallback-logo').style.display='flex';">
+                
+                <!-- Fallback Logo (Texto) -->
+                <div id="fallback-logo" style="display: none;" class="items-center gap-2 mb-3">
+                    <div class="w-8 h-0.5 bg-teal-600 relative">
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full border-2 border-teal-600 bg-white"></div>
+                    </div>
+                    <h1 class="text-4xl font-bold tracking-tight text-slate-900">Lat<span class="text-teal-600">Zero</span></h1>
+                </div>
+
                 <p class="text-sm font-semibold text-teal-700 max-w-sm">Plataforma integrada de produção, governança, qualidade e inteligência territorial</p>
             </div>
 
